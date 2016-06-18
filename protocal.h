@@ -95,31 +95,9 @@ class Protocal {
     };
     cout << "I: " << req.dump() << endl;
 
+
     std::stringstream out;
-    try {
-      curlpp::Cleanup clean;
-      curlpp::Easy request;
-      request.setOpt(new curlpp::options::Url(PATH_LOGIN));
-
-      std::string test = req.dump();
-      std::list<std::string> headers;
-      headers.push_back("Content-Type: application/json"); 
-      request.setOpt(new curlpp::options::HttpHeader(headers));      
-
-      request.setOpt(new curlpp::options::PostFields(test)); 
-      request.setOpt(new curlpp::options::PostFieldSize(test.length())); 
-
-      request.setOpt(new curlpp::options::WriteStream(&out));
-      request.setOpt(new curlpp::options::Verbose(false));
-      request.perform();
-    }
-    catch ( curlpp::LogicError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    catch ( curlpp::RuntimeError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    cout << "Raw: " << out.str() << endl;
+    curlpp_post(PATH_LOGIN, req, out);
     string err;
     Json res = Json::parse(out.str(), err);
     Json response = res["loginResp"];
@@ -149,28 +127,8 @@ class Protocal {
     };
     cout << "I: " << req.dump() << endl;
     std::stringstream out;
-    try {
-      curlpp::Cleanup clean;
-      curlpp::Easy request;
-      request.setOpt(new curlpp::options::Url(PATH_ALARM));
-      std::string test = req.dump();
-      std::list<std::string> headers;
-      headers.push_back("Content-Type: application/json"); 
-      request.setOpt(new curlpp::options::HttpHeader(headers));
-      request.setOpt(new curlpp::options::PostFields(test)); 
-      request.setOpt(new curlpp::options::PostFieldSize(test.length())); 
+    curlpp_post(PATH_ALARM, req, out);
 
-      request.setOpt(new curlpp::options::WriteStream(&out));
-      request.setOpt(new curlpp::options::Verbose(false));
-      request.perform();
-    }
-    catch ( curlpp::LogicError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    catch ( curlpp::RuntimeError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    cout << "Raw: " << out.str() << endl;
     string err;
     Json res = Json::parse(out.str(), err);
     Json response = res["alarmResp"];
@@ -193,28 +151,8 @@ class Protocal {
     };
     cout << "I: " << req.dump() << endl;
     std::stringstream out;
-    try {
-      curlpp::Cleanup clean;
-      curlpp::Easy request;
-      request.setOpt(new curlpp::options::Url(PATH_CONNT));
-      std::string test = req.dump();
-      std::list<std::string> headers;
-      headers.push_back("Content-Type: application/json"); 
-      request.setOpt(new curlpp::options::HttpHeader(headers));
-      request.setOpt(new curlpp::options::PostFields(test)); 
-      request.setOpt(new curlpp::options::PostFieldSize(test.length())); 
+    curlpp_post(PATH_CONNT, req, out);
 
-      request.setOpt(new curlpp::options::WriteStream(&out));
-      request.setOpt(new curlpp::options::Verbose(false));
-      request.perform();
-    }
-    catch ( curlpp::LogicError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    catch ( curlpp::RuntimeError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    cout << "Raw: " << out.str() << endl;
     string err;
     Json res = Json::parse(out.str(), err);
     Json response = res["conntResp"];
@@ -253,26 +191,8 @@ class Protocal {
     };
     cout << "I: " << req.dump() << endl;
     std::stringstream out;
-    try {
-      curlpp::Cleanup clean;
-      curlpp::Easy request;
-      request.setOpt(new curlpp::options::Url(PATH_UPLOAD_FILE_INFO));
-    
-      std::string test = req.dump();
-      request.setOpt(new curlpp::options::PostFields(test)); 
-      request.setOpt(new curlpp::options::PostFieldSize(test.length())); 
+    curlpp_post(PATH_UPLOAD_FILE_INFO, req, out);
 
-      request.setOpt(new curlpp::options::WriteStream(&out));
-      request.setOpt(new curlpp::options::Verbose(false));
-      request.perform();
-    }
-    catch ( curlpp::LogicError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    catch ( curlpp::RuntimeError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    cout << "Raw: " << out.str() << endl;
     string err;
     Json res = Json::parse("{"+out.str(), err);
     Json response = res["uploadfileInfoReq"];
@@ -299,26 +219,8 @@ class Protocal {
     };
     cout << "I: " << req.dump() << endl;
     std::stringstream out;
-    try {
-      curlpp::Cleanup clean;
-      curlpp::Easy request;
-      request.setOpt(new curlpp::options::Url(PATH_UPLOAD_BIG_FILE));
-    
-      std::string test = req.dump();
-      request.setOpt(new curlpp::options::PostFields(test)); 
-      request.setOpt(new curlpp::options::PostFieldSize(test.length())); 
+    curlpp_post(PATH_UPLOAD_BIG_FILE, req, out);
 
-      request.setOpt(new curlpp::options::WriteStream(&out));
-      request.setOpt(new curlpp::options::Verbose(false));
-      request.perform();
-    }
-    catch ( curlpp::LogicError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    catch ( curlpp::RuntimeError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    cout << "Raw: " << out.str() << endl;
     string err;
     Json res = Json::parse("{"+out.str(), err);
     Json response = res["uploadFileInfoReq"];
@@ -339,23 +241,16 @@ class Protocal {
     };
     cout << "I: " << req.dump() << endl;
     std::stringstream out;
-    try {
+    curlpp_post(PATH_UPLOAD_FILE, hashName, fileName, out);
+    /*try {
       curlpp::Cleanup clean;
       curlpp::Easy request;
       request.setOpt(new curlpp::options::Url(PATH_UPLOAD_FILE));
-    
-      /*std::string test = req.dump();
-	request.setOpt(new curlpp::options::PostFields(test));
-	request.setOpt(new curlpp::options::PostFieldSize(test.length()));*/
-      
       {
 	// Forms takes ownership of pointers!
 	curlpp::Forms formParts;
-	//formParts.push_back(new curlpp::FormParts::Content("name1", "value1"));
-	//formParts.push_back(new curlpp::FormParts::Content("name2", "value2"));
-	formParts.push_back(new curlpp::FormParts::File(hashName, "1.png"));
-      
-	request.setOpt(new curlpp::options::HttpPost(formParts)); 
+	formParts.push_back(new curlpp::FormParts::File(hashName, fileName));
+	request.setOpt(new curlpp::options::HttpPost(formParts));
       }
 
       request.setOpt(new curlpp::options::WriteStream(&out));
@@ -367,8 +262,7 @@ class Protocal {
     }
     catch ( curlpp::RuntimeError & e ) {
       std::cerr << e.what() << std::endl;
-    }
-    cout << "Raw: " << out.str() << endl;
+      }*/
     string err;
     Json res = Json::parse("{"+out.str(), err);
     Json response = res["uploadFileReq"];
@@ -377,7 +271,7 @@ class Protocal {
     json = response;
     return code;
   }
-  
+
   int upload_file(const string &token,
 		  const int userId,
 		  const string &fileName,
@@ -396,7 +290,7 @@ class Protocal {
       detaiTFileType = "err";
     }
     string fileData = "";
-    
+
     ifstream in(fileName, ios::binary);
     if (!in) {
       return -1;
@@ -410,7 +304,7 @@ class Protocal {
     in.seekg(0,ios_base::end);
     fileSize = in.tellg(); //
     sectionSize = fileSize; //
-    
+
     in.seekg(0,ios_base::beg);
     MD5 md5;
     md5.reset();
@@ -420,7 +314,7 @@ class Protocal {
     cout << fileSize << " " << fileHash << endl;
 
     in.seekg(0,ios_base::beg);
-    
+
     in.close();
 
     // upload_file_info
@@ -449,6 +343,55 @@ class Protocal {
       }
     }
     return "未定义错误";
+  }
+
+  // curl part
+  void curlpp_post(const string &server, const Json& req, std::stringstream &out) {
+    try {
+      curlpp::Cleanup clean;
+      curlpp::Easy request;
+      request.setOpt(new curlpp::options::Url(server));
+
+      std::list<std::string> headers;
+      headers.push_back("Content-Type: application/json");
+      request.setOpt(new curlpp::options::HttpHeader(headers));
+
+      std::string test = req.dump();
+      request.setOpt(new curlpp::options::PostFields(test));
+      request.setOpt(new curlpp::options::PostFieldSize(test.length()));
+
+      request.setOpt(new curlpp::options::WriteStream(&out));
+      request.setOpt(new curlpp::options::Verbose(false));
+      request.perform();
+    }
+    catch ( curlpp::LogicError & e ) {
+      std::cerr << e.what() << std::endl;
+    }
+    catch ( curlpp::RuntimeError & e ) {
+      std::cerr << e.what() << std::endl;
+    }
+  }
+  void curlpp_post(const string &server, const string &hashName, const string fileName, /*const Json& req,*/ std::stringstream &out) {
+    try {
+      curlpp::Cleanup clean;
+      curlpp::Easy request;
+      request.setOpt(new curlpp::options::Url(server));
+
+      // Forms takes ownership of pointers!
+      curlpp::Forms formParts;
+      formParts.push_back(new curlpp::FormParts::File(hashName, fileName));
+      request.setOpt(new curlpp::options::HttpPost(formParts));
+
+      request.setOpt(new curlpp::options::WriteStream(&out));
+      request.setOpt(new curlpp::options::Verbose(false));
+      request.perform();
+    }
+    catch ( curlpp::LogicError & e ) {
+      std::cerr << e.what() << std::endl;
+    }
+    catch ( curlpp::RuntimeError & e ) {
+      std::cerr << e.what() << std::endl;
+    }
   }
 };
 
