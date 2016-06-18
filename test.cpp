@@ -20,7 +20,6 @@ int main(int argc, char *argv[]) {
     return -1;
     }
 
-
   int resultCode = json["resultCode"].int_value();
   string token = json["token"].string_value();
   string tokenExpires = json["tokenExpires"].string_value();
@@ -33,15 +32,15 @@ int main(int argc, char *argv[]) {
   //cout << json.dump() << endl;
   if (code != N_ERROR[0]) {
     cerr << pp->p_error(code) << ", more info: \n" << json.dump() << endl;
+  } else {
+    resultCode = json["resultCode"].int_value();
+    token = json["token"].string_value();
+    tokenExpires = json["tokenExpires"].string_value();
   }
-  resultCode = json["resultCode"].int_value();
-  token = json["token"].string_value();
-  tokenExpires = json["tokenExpires"].string_value();
 
   // alarm
   // alarm.face
   string alarmRecordDateTime = "2016-5-19 14:13:59";
-  Json::array arr;
   Json o = Json::object {
     {"plateNumber","67890"},
     {"province","四川省"},
@@ -50,37 +49,37 @@ int main(int argc, char *argv[]) {
     {"busRoute","801"},
     {"driverName","王王"},
     {"eventTime",alarmRecordDateTime},
-    {"precision",0.9},
+    {"precisions",0.9},
   };
-  arr.push_back(o);
-  code = pp->alarm(token, FACE, alarmRecordDateTime, arr, userId, json);
-  //cout << json.dump() << endl;
+  code = pp->alarm(token, FACE, alarmRecordDateTime, o, userId, json);
   if (code != N_ERROR[0]) {
     cerr << pp->p_error(code) << ", more info: \n" << json.dump() << endl;
     //return -2;
   }
   resultCode = json["resultCode"].int_value();
-  token = json["token"].string_value();
+  //token = json["token"].string_value();
   int alarmRecordId = json["alarmRecordId"].int_value();
   userId = json["userId"].int_value();
 
   // alarm.phone
-  arr.clear();
-  code = pp->alarm(token, PHONE, alarmRecordDateTime, arr, userId, json);
-  //cout << json.dump() << endl;
+  code = pp->alarm(token, PHONE, alarmRecordDateTime, o, userId, json);
   if (code != N_ERROR[0]) {
     cerr << pp->p_error(code) << ", more info: \n" << json.dump() << endl;
-    return -2;
+    //return -2;
   }
   resultCode = json["resultCode"].int_value();
-  token = json["token"].string_value();
+  //token = json["token"].string_value();
   alarmRecordId = json["alarmRecordId"].int_value();
   userId = json["userId"].int_value();
+  int behaviourAlarmId = json["contents"].int_value();
 
   // upload file info
   //code = pp->upload_file_info(token, userId, "demo.jpg", "7717d9e7dc17d085fe9e012f06558699", 13806, 13806, 1, "jpg", alarmRecordId, 1, json);
   //code = pp->upload_file_info("12ea66ce789e44a0a15292c8ba6ae92b", 2, "demo.jpg", "7717d9e7dc17d085fe9e012f06558699", 13806, 13806, 1, "jpg", 1, 37, json);
-  code = pp->upload_file("test_token_10001", 2, "4.png", 1, 37, json);
+  //return 0;
+  //token = "test_token_10001";  userId = 2;  behaviourAlarmId = 1;  alarmRecordId = 37;
+  string filename = "4.png";
+  code = pp->upload_file(token, userId, filename, behaviourAlarmId, alarmRecordId, json);
   //cout << json.dump() << endl;
   if (code != N_ERROR[0]) {
     cerr << pp->p_error(code) << ", more info: \n" << json.dump() << endl;

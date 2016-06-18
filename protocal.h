@@ -79,6 +79,7 @@ class Protocal {
   Protocal() {
   }
   ~Protocal() {}
+
   int login(const string &userName,
 	    const string &password,
 	    int version,
@@ -131,17 +132,17 @@ class Protocal {
   int alarm(const string &token,
 	    int alarmType,
 	    const string &alarmRecordDateTime,
-	    const Json::array &arr,
+	    const Json &arr,
 	    int userId,
 	    Json &json)
   {
     Json body = Json::object {
       {"token", token},
-      {"userId", userId},
-      {"typeId", N_ALARM[alarmType]},
-      {"typeDesc", S_ALARM[alarmType]},
-      {"alarmRecordDateTime", alarmRecordDateTime},
-      //{"contents", arr},
+      {"userId", std::to_string(userId)},
+      {"typeId", std::to_string(N_ALARM[alarmType])},
+      //{"typeDesc", S_ALARM[alarmType]},
+      //{"alarmRecordDateTime", alarmRecordDateTime},
+      {"contents", arr},
     };
     Json req = Json::object {
       {"alarmReq", body}
