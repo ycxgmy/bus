@@ -6,15 +6,31 @@
 #include "json11/json11.hpp"
 using namespace json11;
 
+#include <iostream>
 #include <string>
 #include <sstream>
 using namespace std;
 
 //#include <openssl/md5.h>
+//#define CURLPP
+#ifdef CURLPP
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 #include <curlpp/Form.hpp>
+#else
+#include <string.h>
+#include "curl/curl.h"
+unsigned char bufff[40960];
+int l = 0;
+int writer(unsigned char *data, size_t size, size_t nmemb, unsigned char *writerData)
+{
+int realsize = size * nmemb;
+memcpy(bufff + l, data, realsize);
+l += realsize;
+return realsize;
+}
+#endif
 
 const string PATH_LOGIN = "http://uwonders.ticp.net:8089/alarmupload/login";
 const string PATH_ALARM = "http://uwonders.ticp.net:8089/alarmupload/alarm";
@@ -223,7 +239,7 @@ class Protocal {
 
     string err;
     Json res = Json::parse("{"+out.str(), err);
-    Json response = res["uploadFileInfoReq"];
+    Json response = res["uploadFileReq"];
     cout << "O: " << res.dump() << endl;
     int code = response["resultCode"].int_value();
     json = response;
@@ -325,11 +341,11 @@ class Protocal {
     }
 
     // try to upload by method 1
-    json = Json();
+    /*json = Json();
     code = upload_form_file(fileName, fileHash, json);
     if (code == N_ERROR[0]) {
       return code;
-    }
+      }*/
 
     // try to upload by method 2
     json = Json();
@@ -345,6 +361,7 @@ class Protocal {
     return "未定义错误";
   }
 
+#ifdef CURLPP
   // curl part
   void curlpp_post(const string &server, const Json& req, std::stringstream &out) {
     try {
@@ -393,7 +410,72 @@ class Protocal {
       std::cerr << e.what() << std::endl;
     }
   }
+#else
+  void curlpp_post(const string &server, const Json& req, std::stringstream &out) {
+    CURL *curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_ALL);
+    l = 0;
+    memset(bufff, 0, sizeof(bufff));
+
+    curl = curl_easy_init();
+    if (curl) {
+      curl_easy_setopt(curl, CURLOPT_URL, server.c_str());
+
+      curl_slist *plist = curl_slist_append(NULL, "Content-Type: application/json");
+      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, plist); 
+      string str = req.dump();
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, str.c_str());
+      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
+
+      res = curl_easy_perform(curl);
+      if (res != CURLE_OK)
+	fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+      out.write((char*)bufff, l);
+      curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+  }
+  void curlpp_post(const string &server, const string &hashName, const string fileName, /*const Json& req,*/ std::stringstream &out) {
+    CURL *curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_ALL);
+    l = 0;
+    memset(bufff, 0, sizeof(bufff));
+
+    curl = curl_easy_init();
+    if (curl) {
+      curl_easy_setopt(curl, CURLOPT_URL, server.c_str());
+
+      curl_slist *plist = curl_slist_append(NULL, "Content-Type: application/json");
+      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, plist); 
+      struct curl_httppost *post=NULL;
+      struct curl_httppost *last=NULL;
+      curl_formadd(&post, &last, CURLFORM_COPYNAME, hashName.c_str(),
+		   CURLFORM_FILE, fileName.c_str(), CURLFORM_END);
+      curl_formadd(&post, &last,
+		   CURLFORM_COPYNAME, "submit",
+		   CURLFORM_COPYCONTENTS, "OK",
+		   CURLFORM_END);
+
+      curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+      //string str = req.dump();
+      //curl_easy_setopt(curl, CURLOPT_POSTFIELDS, str.c_str());
+      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
+
+      res = curl_easy_perform(curl);
+      if (res != CURLE_OK)
+	fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+      out.write((char*)bufff, l);
+      curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+  }
+#endif
 };
+
 
 
 
