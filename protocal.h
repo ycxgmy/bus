@@ -11,6 +11,8 @@ using namespace json11;
 #include <sstream>
 using namespace std;
 
+#include <future>
+
 //#include <openssl/md5.h>
 //#define CURLPP
 #ifdef CURLPP
@@ -477,6 +479,108 @@ class Protocal {
 };
 
 
+class Session {
+ public:
+  string mUsername;
+  string mPassword;
+  std::future<Json> fLogin;
+  Json mBusInfo;
+
+  //
+  string token, nickName;
+  int userId;
+
+  Protocal *mProtocal;
+
+  Session(const string &plateNumber
+	  ,const string &province
+	  ,const string &city
+	  ,const string &county
+	  ,const string &busRoute
+	  ,const string &driverName
+	  ,const string &username="test"
+	  ,const string &password="123456"
+	  ) {
+    mProtocal = new Protocal();
+    mUsername = username;
+    mPassword = password;
+    mBusInfo = Json::object {
+      {"plateNumber",plateNumber},
+      {"province",province},
+      {"city",city},
+      {"county",county},
+      {"busRoute",busRoute},
+      {"driverName",driverName},
+      {"eventTime",""},
+      {"precisions",0},
+    };
+    
+    token = nickName = "";
+    fLogin = std::async(std::launch::async, login, this);
+  }
+  ~Session() {
+    delete mProtocal;
+  }
+  void alarm_face(const string &imagefile, double conf) {
+    std::async(std::launch::async, alarm, this, FACE, imagefile, conf);
+  }
+  void alarm_smoke(const string &imagefile, double conf) {
+    std::async(std::launch::async, alarm, this, SMOKE, imagefile, conf);
+  }
+  void alarm_phone(const string &imagefile, double conf) {
+    std::async(std::launch::async, alarm, this, PHONE, imagefile, conf);
+  }
+  void alarm_unbelt(const string &imagefile, double conf) {
+    std::async(std::launch::async, alarm, this, UNBELT, imagefile, conf);
+  }
+  void alarm_fatigue(const string &imagefile, double conf) {
+    std::async(std::launch::async, alarm, this, FATIGUE, imagefile, conf);
+  }
+  static void alarm(Session * ss, int type, string imagefile, double precisions) {
+    if (ss->token == "") {
+      Json json = ss->fLogin.get();
+      if (N_ERROR[0] == json["resultCode"].int_value()) {
+	//int resultCode = json["resultCode"].int_value();
+	ss->token = json["token"].string_value();
+	//string tokenExpires = json["tokenExpires"].string_value();
+	//string userName = json["userName"].string_value();
+	ss->nickName = json["nickName"].string_value();
+	ss->userId = json["userId"].int_value();
+      }
+    }
+
+    string alarmRecordDateTime = "2016-5-19 14:13:59";
+    Json o = Json::object {
+      {"plateNumber",ss->mBusInfo["plateNumber"]},
+      {"province",ss->mBusInfo["province"]},
+      {"city",ss->mBusInfo["city"]},
+      {"county",ss->mBusInfo["county"]},
+      {"busRoute",ss->mBusInfo["busRoute"]},
+      {"driverName",ss->mBusInfo["driverName"]},
+      {"eventTime","2016-5-19 14:13:59"},
+      {"precisions",precisions},
+    };
+    Json json;
+    ss->mProtocal->alarm(ss->token, type, alarmRecordDateTime, o, ss->userId, json);
+    if (N_ERROR[0] != json["resultCode"].int_value()) {
+      return;
+    }
+
+    int alarmRecordId = json["alarmRecordId"].int_value();
+    int behaviourAlarmId = json["contents"].int_value();
+
+    json = Json();
+    if (N_ERROR[0] != ss->mProtocal->upload_file(ss->token, ss->userId, imagefile, behaviourAlarmId, alarmRecordId, json)) {
+      return;
+    }
+    
+  }
+  static Json login(Session *ss) {
+    Json json;
+    ss->mProtocal->login(ss->mUsername, ss->mPassword, 1, json);
+    return json;
+  }
+};
 
 
 #endif // ___PROTOCAL__H_

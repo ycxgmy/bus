@@ -1,7 +1,25 @@
+#include <opencv2/opencv.hpp>
+using namespace cv;
 #include "protocal.h"
 #include <iostream>
 using namespace std;
 int main(int argc, char *argv[]) {
+  Session *ss = new Session("67890"
+			    ,"四川省"
+			    ,"绵阳市"
+			    ,"高新区"
+			    ,"801"
+			    ,"王王"
+			    );
+
+  Mat x = Mat::zeros(100,100, CV_8UC1);
+  putText(x, std::to_string(getTickCount()),Point(0,50), 1, 1, Scalar(255,255,255));
+  imwrite("tmp.jpg", x);
+  ss->alarm_face("tmp.jpg", 0.9);
+  cout << "x" << endl;
+  //ss->alarm_face();
+  delete ss;
+  return 0;
   /*{
     for (int i = 0; i < sizeof(N_ERROR)/sizeof(N_ERROR[0]); ++i)
       cout << N_ERROR[i] << " " << S_ERROR[i] << endl;
@@ -78,7 +96,7 @@ int main(int argc, char *argv[]) {
   //code = pp->upload_file_info("12ea66ce789e44a0a15292c8ba6ae92b", 2, "demo.jpg", "7717d9e7dc17d085fe9e012f06558699", 13806, 13806, 1, "jpg", 1, 37, json);
   //return 0;
   //token = "test_token_10001";  userId = 2;  behaviourAlarmId = 1;  alarmRecordId = 37;
-  string filename = "4.png";
+  string filename = "6.png";
   code = pp->upload_file(token, userId, filename, behaviourAlarmId, alarmRecordId, json);
   //cout << json.dump() << endl;
   if (code != N_ERROR[0]) {
