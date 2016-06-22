@@ -86,11 +86,11 @@ const string _ALARM_CODES[ALARM_CODES_LEN * 2] = {
 #define X_S(i) _ALARM_CODES[2*i+1]
 const int    N_ALARM[] = {X_I(0),X_I(1),X_I(2),X_I(3),X_I(4),};
 const string S_ALARM[] = {X_S(0),X_S(1),X_S(2),X_S(3),X_S(4),};
-const int FACE = 0;
-const int SMOKE = 1;
-const int PHONE = 2;
-const int UNBELT = 3;
-const int FATIGUE = 4;
+const int UW_FACE = 0;
+const int UW_SMOKE = 1;
+const int UW_PHONE = 2;
+const int UW_UNBELT = 3;
+const int UW_FATIGUE = 4;
 
 class Protocal {
  public:
@@ -525,16 +525,16 @@ class Session {
     std::async(std::launch::async, alarm, this, FACE, imagefile, conf);
   }
   void alarm_smoke(const string &imagefile, double conf) {
-    std::async(std::launch::async, alarm, this, SMOKE, imagefile, conf);
+    std::async(std::launch::async, alarm, this, UW_SMOKE, imagefile, conf);
   }
   void alarm_phone(const string &imagefile, double conf) {
-    std::async(std::launch::async, alarm, this, PHONE, imagefile, conf);
+    std::async(std::launch::async, alarm, this, UW_PHONE, imagefile, conf);
   }
   void alarm_unbelt(const string &imagefile, double conf) {
-    std::async(std::launch::async, alarm, this, UNBELT, imagefile, conf);
+    std::async(std::launch::async, alarm, this, UW_UNBELT, imagefile, conf);
   }
   void alarm_fatigue(const string &imagefile, double conf) {
-    std::async(std::launch::async, alarm, this, FATIGUE, imagefile, conf);
+    std::async(std::launch::async, alarm, this, UW_FATIGUE, imagefile, conf);
   }
   static void alarm(Session * ss, int type, string imagefile, double precisions) {
     if (ss->token == "") {
