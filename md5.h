@@ -1,50 +1,60 @@
 #ifndef MD5_H
 #define MD5_H
-
-#include <string>
 #include <fstream>
+using namespace std;
+typedef struct
+{
+	unsigned int count[2];
+	unsigned int state[4];
+	unsigned char buffer[64];   
+} MD5_CTX;
 
-/* Type define */
-typedef unsigned char byte;
-typedef unsigned int uint32;
 
-using std::string;
-using std::ifstream;
+#define F(x,y,z) ((x & y) | (~x & z))
+#define G(x,y,z) ((x & z) | (y & ~z))
+#define H(x,y,z) (x^y^z)
+#define I(x,y,z) (y ^ (x | ~z))
+#define ROTATE_LEFT(x,n) ((x << n) | (x >> (32-n)))
 
-/* MD5 declaration. */
-class MD5 {
- public:
-  MD5();
-  MD5(const void *input, size_t length);
-  MD5(const string &str);
-  MD5(ifstream &in);
-  void update(const void *input, size_t length);
-  void update(const string &str);
-  void update(ifstream &in);
-  const byte* digest();
-  string toString();
-  void reset();
- private:
-  void update(const byte *input, size_t length);
-  void final();
-  void transform(const byte block[64]);
-  void encode(const uint32 *input, byte *output, size_t length);
-  void decode(const byte *input, uint32 *output, size_t length);
-  string bytesToHexString(const byte *input, size_t length);
+#define FF(a,b,c,d,x,s,ac) \
+{ \
+	a += F(b,c,d) + x + ac; \
+	a = ROTATE_LEFT(a,s); \
+	a += b; \
+}
+#define GG(a,b,c,d,x,s,ac) \
+{ \
+	a += G(b,c,d) + x + ac; \
+	a = ROTATE_LEFT(a,s); \
+	a += b; \
+}
+#define HH(a,b,c,d,x,s,ac) \
+{ \
+	a += H(b,c,d) + x + ac; \
+	a = ROTATE_LEFT(a,s); \
+	a += b; \
+}
+#define II(a,b,c,d,x,s,ac) \
+{ \
+	a += I(b,c,d) + x + ac; \
+	a = ROTATE_LEFT(a,s); \
+	a += b; \
+}                                            
+void MD5Init(MD5_CTX *context);
+void MD5Update(MD5_CTX *context, unsigned char *input, unsigned int inputlen);
+void MD5Final(MD5_CTX *context, unsigned char digest[16]);
+void MD5Transform(unsigned int state[4], unsigned char block[64]);
+void MD5Encode(unsigned char *output, unsigned int *input, unsigned int len);
+void MD5Decode(unsigned int *output, unsigned char *input, unsigned int len);
 
-  /* class uncopyable */
-  MD5(const MD5&);
-  MD5& operator=(const MD5&);
- private:
-  uint32 _state[4];/* state (ABCD) */
-  uint32 _count[2];/* number of bits, modulo 2^64 (low-order word first) */
-  byte _buffer[64];/* input buffer */
-  byte _digest[16];/* message digest */
-  bool _finished;/* calculate finished ? */
 
-  static const byte PADDING[64];/* padding for calculate */
-  static const char HEX[16];
-  static const size_t BUFFER_SIZE = 1024;
-};
+#define READ_DATA_SIZE	1024
+#define MD5_SIZE		16
+#define MD5_STR_LEN		(MD5_SIZE * 2)
 
-#endif/*MD5_H*/
+// function declare
+int Compute_string_md5(unsigned char *dest_str, unsigned int dest_len, char *md5_str);
+int Compute_file_md5(ifstream &in, char *md5_str);
+
+#endif
+
