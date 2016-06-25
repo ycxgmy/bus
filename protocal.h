@@ -9,13 +9,15 @@ using namespace json11;
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <fstream>
 using namespace std;
 
 #include <future>
 
 //#include <openssl/md5.h>
-//#define CURLPP
+#define CURLPP
 #ifdef CURLPP
+#include <string.h>
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
@@ -23,15 +25,9 @@ using namespace std;
 #else
 #include <string.h>
 #include "curl/curl.h"
-unsigned char bufff[40960];
-int l = 0;
-int writer(unsigned char *data, size_t size, size_t nmemb, unsigned char *writerData)
-{
-int realsize = size * nmemb;
-memcpy(bufff + l, data, realsize);
-l += realsize;
-return realsize;
-}
+extern unsigned char bufff[40960];
+extern int l;
+int writer(unsigned char *data, size_t size, size_t nmemb, unsigned char *writerData);
 #endif
 
 const string PATH_LOGIN = "http://uwonders.ticp.net:8089/alarmupload/login";
@@ -94,7 +90,9 @@ const int UW_FATIGUE = 4;
 
 class Protocal {
  public:
+  int verbose;
   Protocal() {
+    verbose = 0;
   }
   ~Protocal() {}
 
@@ -111,7 +109,8 @@ class Protocal {
     Json req = Json::object {
       {"loginReq", body}
     };
-    cout << "I: " << req.dump() << endl;
+    if (verbose > 0)
+      cout << "I: " << req.dump() << endl;
 
 
     std::stringstream out;
@@ -119,7 +118,8 @@ class Protocal {
     string err;
     Json res = Json::parse(out.str(), err);
     Json response = res["loginResp"];
-    cout << "O: " << res.dump() << endl;
+    if (verbose > 0)
+      cout << "O: " << res.dump() << endl;
     int code = response["resultCode"].int_value();
     json = response;
     return code;
@@ -136,21 +136,21 @@ class Protocal {
       {"token", token},
       {"userId", std::to_string(userId)},
       {"typeId", std::to_string(N_ALARM[alarmType])},
-      //{"typeDesc", S_ALARM[alarmType]},
-      //{"alarmRecordDateTime", alarmRecordDateTime},
       {"contents", arr},
     };
     Json req = Json::object {
       {"alarmReq", body}
     };
-    cout << "I: " << req.dump() << endl;
+    if (verbose > 0)
+      cout << "I: " << req.dump() << endl;
     std::stringstream out;
     curlpp_post(PATH_ALARM, req, out);
 
     string err;
     Json res = Json::parse(out.str(), err);
     Json response = res["alarmResp"];
-    cout << "O: " << res.dump() << endl;
+    if (verbose > 0)
+      cout << "O: " << res.dump() << endl;
     int code = response["resultCode"].int_value();
     json = response;
     return code;
@@ -167,14 +167,16 @@ class Protocal {
     Json req = Json::object {
       {"conntReq", body}
     };
-    cout << "I: " << req.dump() << endl;
+    if (verbose > 0)
+      cout << "I: " << req.dump() << endl;
     std::stringstream out;
     curlpp_post(PATH_CONNT, req, out);
 
     string err;
     Json res = Json::parse(out.str(), err);
     Json response = res["conntResp"];
-    cout << "O: " << res.dump() << endl;
+    if (verbose > 0)
+      cout << "O: " << res.dump() << endl;
     int code = response["resultCode"].int_value();
     json = response;
     return code;
@@ -187,7 +189,7 @@ class Protocal {
 		       int fileSize,
 		       int sectionSize,
 		       int fileType,
-		       const string detaiTFileType, // TODO typo
+		       const string detailFileType, // TODO typo
 		       int behaviourAlarmId,
 		       int alarmRecordId,
 		       Json &json)
@@ -200,21 +202,23 @@ class Protocal {
       {"fileSize", fileSize},
       {"sectionSize", sectionSize},
       {"fileType", fileType},
-      {"detaiTFileType", detaiTFileType},
+      {"detailFileType", detailFileType},
       {"behaviourAlarmId", behaviourAlarmId},
       {"alarmRecordId", alarmRecordId},
     };
     Json req = Json::object {
       {"uploadfileInfoReq", body}
     };
-    cout << "I: " << req.dump() << endl;
+    if (verbose > 0)
+      cout << "I: " << req.dump() << endl;
     std::stringstream out;
     curlpp_post(PATH_UPLOAD_FILE_INFO, req, out);
 
     string err;
     Json res = Json::parse("{"+out.str(), err);
     Json response = res["uploadfileInfoReq"];
-    cout << "O: " << res.dump() << endl;
+    if (verbose > 0)
+      cout << "O: " << res.dump() << endl;
     int code = response["resultCode"].int_value();
     json = response;
     return code;
@@ -235,14 +239,16 @@ class Protocal {
     Json req = Json::object {
       {"uploadFileReq", body}
     };
-    cout << "I: " << req.dump() << endl;
+    if (verbose > 0)
+      cout << "I: " << req.dump() << endl;
     std::stringstream out;
     curlpp_post(PATH_UPLOAD_BIG_FILE, req, out);
 
     string err;
     Json res = Json::parse("{"+out.str(), err);
     Json response = res["uploadFileReq"];
-    cout << "O: " << res.dump() << endl;
+    if (verbose > 0)
+      cout << "O: " << res.dump() << endl;
     int code = response["resultCode"].int_value();
     json = response;
     return code;
@@ -257,34 +263,15 @@ class Protocal {
     Json req = Json::object {
       {"uploadFileReq", body}
     };
-    cout << "I: " << req.dump() << endl;
+    if (verbose > 0)
+      cout << "I: " << req.dump() << endl;
     std::stringstream out;
     curlpp_post(PATH_UPLOAD_FILE, hashName, fileName, out);
-    /*try {
-      curlpp::Cleanup clean;
-      curlpp::Easy request;
-      request.setOpt(new curlpp::options::Url(PATH_UPLOAD_FILE));
-      {
-	// Forms takes ownership of pointers!
-	curlpp::Forms formParts;
-	formParts.push_back(new curlpp::FormParts::File(hashName, fileName));
-	request.setOpt(new curlpp::options::HttpPost(formParts));
-      }
-
-      request.setOpt(new curlpp::options::WriteStream(&out));
-      request.setOpt(new curlpp::options::Verbose(false));
-      request.perform();
-    }
-    catch ( curlpp::LogicError & e ) {
-      std::cerr << e.what() << std::endl;
-    }
-    catch ( curlpp::RuntimeError & e ) {
-      std::cerr << e.what() << std::endl;
-      }*/
     string err;
     Json res = Json::parse("{"+out.str(), err);
     Json response = res["uploadFileReq"];
-    cout << "O: " << res.dump() << endl;
+    if (verbose > 0)
+      cout << "O: " << res.dump() << endl;
     int code = response["resultCode"].int_value();
     json = response;
     return code;
@@ -301,11 +288,11 @@ class Protocal {
     int fileSize = 0;
     int sectionSize = 0;
     int fileType = 1;
-    string detaiTFileType = "jpg";
+    string detailFileType = "jpg";
     if (fileName.length() > 3) {
-      detaiTFileType = fileName.substr(fileName.length() - 3);
+      detailFileType = fileName.substr(fileName.length() - 3);
     } else {
-      detaiTFileType = "err";
+      detailFileType = "err";
     }
     string fileData = "";
 
@@ -324,12 +311,11 @@ class Protocal {
     sectionSize = fileSize; //
 
     in.seekg(0,ios_base::beg);
-    MD5 md5;
-    md5.reset();
-    md5.update(in);
-    md5.digest();
-    fileHash = md5.toString(); //
-    cout << fileSize << " " << fileHash << endl;
+
+    char md5_str[MD5_STR_LEN + 1];
+    memset(md5_str, 0, sizeof(md5_str));
+    Compute_file_md5(in, md5_str);
+    fileHash = string(md5_str);
 
     in.seekg(0,ios_base::beg);
 
@@ -337,7 +323,7 @@ class Protocal {
 
     // upload_file_info
     json = Json();
-    int code = upload_file_info(token, userId, fileName, fileHash, fileSize, sectionSize, fileType, detaiTFileType, behaviourAlarmId, alarmRecordId, json);
+    int code = upload_file_info(token, userId, fileName, fileHash, fileSize, sectionSize, fileType, detailFileType, behaviourAlarmId, alarmRecordId, json);
     if (code != N_ERROR[0]) {
       return -2;
     }
@@ -352,7 +338,8 @@ class Protocal {
     // try to upload by method 2
     json = Json();
     long offset = 0;
-    return upload_big_file(token, fileHash, offset, fileData, json);
+    int codee = upload_big_file(token, fileHash, offset, fileData, json);
+    return codee;
   }
   string p_error(int code) const {
     for (int i = 0; i < sizeof(N_ERROR)/sizeof(N_ERROR[0]); ++i) {
@@ -478,19 +465,19 @@ class Protocal {
 #endif
 };
 
-
 class Session {
  public:
   string mUsername;
   string mPassword;
   std::future<Json> fLogin;
   Json mBusInfo;
-
+  mutex mtx;
   //
   string token, nickName;
   int userId;
 
   Protocal *mProtocal;
+  vector<future<Json> > vf;
 
   Session(const string &plateNumber
 	  ,const string &province
@@ -519,35 +506,46 @@ class Session {
     fLogin = std::async(std::launch::async, login, this);
   }
   ~Session() {
+    // sync all asyncs
+    for(future<Json> &x : vf) {
+      Json j = x.get();
+    }
     delete mProtocal;
   }
-  void alarm_face(const string &imagefile, double conf) {
-    std::async(std::launch::async, alarm, this, FACE, imagefile, conf);
+  std::future<Json>& alarm_face(const string &imagefile, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_FACE, imagefile, conf));
+    return vf[vf.size()-1];
   }
-  void alarm_smoke(const string &imagefile, double conf) {
-    std::async(std::launch::async, alarm, this, UW_SMOKE, imagefile, conf);
+  std::future<Json>& alarm_smoke(const string &imagefile, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_SMOKE, imagefile, conf));
+    return vf[vf.size()-1];
   }
-  void alarm_phone(const string &imagefile, double conf) {
-    std::async(std::launch::async, alarm, this, UW_PHONE, imagefile, conf);
+  std::future<Json>& alarm_phone(const string &imagefile, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_PHONE, imagefile, conf));
+    return vf[vf.size()-1];
   }
-  void alarm_unbelt(const string &imagefile, double conf) {
-    std::async(std::launch::async, alarm, this, UW_UNBELT, imagefile, conf);
+  std::future<Json>& alarm_unbelt(const string &imagefile, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_UNBELT, imagefile, conf));
+    return vf[vf.size()-1];
   }
-  void alarm_fatigue(const string &imagefile, double conf) {
-    std::async(std::launch::async, alarm, this, UW_FATIGUE, imagefile, conf);
+  std::future<Json>& alarm_fatigue(const string &imagefile, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_FATIGUE, imagefile, conf));
+    return vf[vf.size()-1];
   }
-  static void alarm(Session * ss, int type, string imagefile, double precisions) {
-    if (ss->token == "") {
-      Json json = ss->fLogin.get();
-      if (N_ERROR[0] == json["resultCode"].int_value()) {
-	//int resultCode = json["resultCode"].int_value();
-	ss->token = json["token"].string_value();
-	//string tokenExpires = json["tokenExpires"].string_value();
-	//string userName = json["userName"].string_value();
-	ss->nickName = json["nickName"].string_value();
-	ss->userId = json["userId"].int_value();
+  static Json alarm(Session * ss, int type, string imagefile, double precisions) {
+
+    {
+      std::lock_guard<std::mutex> lck (ss->mtx);
+      if (ss->token == "") {
+	Json json = ss->fLogin.get();
+	if (N_ERROR[0] == json["resultCode"].int_value()) {
+	  ss->token = json["token"].string_value();
+	  ss->nickName = json["nickName"].string_value();
+	  ss->userId = json["userId"].int_value();
+	}
       }
     }
+
 
     string alarmRecordDateTime = "2016-5-19 14:13:59";
     Json o = Json::object {
@@ -559,21 +557,21 @@ class Session {
       {"driverName",ss->mBusInfo["driverName"]},
       {"eventTime","2016-5-19 14:13:59"},
       {"precisions",precisions},
+      {"hasImg",2},
     };
     Json json;
     ss->mProtocal->alarm(ss->token, type, alarmRecordDateTime, o, ss->userId, json);
+
     if (N_ERROR[0] != json["resultCode"].int_value()) {
-      return;
+      return json;
     }
 
     int alarmRecordId = json["alarmRecordId"].int_value();
     int behaviourAlarmId = json["contents"].int_value();
 
     json = Json();
-    if (N_ERROR[0] != ss->mProtocal->upload_file(ss->token, ss->userId, imagefile, behaviourAlarmId, alarmRecordId, json)) {
-      return;
-    }
-    
+    ss->mProtocal->upload_file(ss->token, ss->userId, imagefile, behaviourAlarmId, alarmRecordId, json);
+    return json;
   }
   static Json login(Session *ss) {
     Json json;
