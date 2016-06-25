@@ -15,7 +15,7 @@ using namespace std;
 #include <future>
 
 //#include <openssl/md5.h>
-#define CURLPP
+//#define CURLPP
 #ifdef CURLPP
 #include <string.h>
 #include <curlpp/cURLpp.hpp>
@@ -92,9 +92,16 @@ class Protocal {
  public:
   int verbose;
   Protocal() {
-    verbose = 0;
+    verbose = 1;
+#ifndef CURLPP
+    curl_global_init(CURL_GLOBAL_ALL);
+#endif
   }
-  ~Protocal() {}
+  ~Protocal() {
+#ifndef CURLPP
+    curl_global_cleanup();
+#endif
+  }
 
   int login(const string &userName,
 	    const string &password,
@@ -403,7 +410,7 @@ class Protocal {
   void curlpp_post(const string &server, const Json& req, std::stringstream &out) {
     CURL *curl;
     CURLcode res;
-    curl_global_init(CURL_GLOBAL_ALL);
+    //curl_global_init(CURL_GLOBAL_ALL);
     l = 0;
     memset(bufff, 0, sizeof(bufff));
 
@@ -424,12 +431,12 @@ class Protocal {
       out.write((char*)bufff, l);
       curl_easy_cleanup(curl);
     }
-    curl_global_cleanup();
+    //curl_global_cleanup();
   }
   void curlpp_post(const string &server, const string &hashName, const string fileName, /*const Json& req,*/ std::stringstream &out) {
     CURL *curl;
     CURLcode res;
-    curl_global_init(CURL_GLOBAL_ALL);
+    //curl_global_init(CURL_GLOBAL_ALL);
     l = 0;
     memset(bufff, 0, sizeof(bufff));
 
@@ -460,7 +467,7 @@ class Protocal {
       out.write((char*)bufff, l);
       curl_easy_cleanup(curl);
     }
-    curl_global_cleanup();
+    //curl_global_cleanup();
   }
 #endif
 };
