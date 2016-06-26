@@ -12,6 +12,7 @@ class Base64
 {
 public:
 	static void encode(string& str);
+	static void encode(const char *buf, int buflen, string & out);
 	static void decode(string& str);
 
 private:

@@ -61,6 +61,28 @@ Base64::encode(string& str)
 	}
 }
 
+void Base64::encode(const char *buf, int buflen, string &out)
+{
+  out.erase();
+  int j = 0;
+  for(int i = 0; i < buflen; ) {
+      char   ech[] = {0,0,0,0};
+      unsigned char   vch[] = {0,0,0};
+      for(j = 0; (j < 3) && (i < buflen); i++)
+	vch[j++] = buf[i];
+      if(j > 0)
+	{
+	  ech[0] = codes[vch[0] >> 2];
+	  ech[1] = codes[((vch[0] & 3) << 4)   | (vch[1] >> 4)];
+	  ech[2] = codes[((vch[1] & 0xF) << 2) | (vch[2] >> 6)];
+	  ech[3] = codes[vch[2] & 0x3F];
+	  while(j < 3)
+	    ech[++j] = '=';
+	  out.append(ech,4);
+	}
+    }
+}
+
 void
 Base64::decode(string& str)
 {
