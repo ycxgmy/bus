@@ -15,7 +15,7 @@ using namespace std;
 #include <future>
 
 //#include <openssl/md5.h>
-//#define CURLPP
+#define CURLPP
 #ifdef CURLPP
 #include <string.h>
 #include <curlpp/cURLpp.hpp>
@@ -286,52 +286,33 @@ class Protocal {
 
   int upload_file(const string &token,
 		  const int userId,
-		  const string &fileName,
+		  const char *buf,
+		  const int buflen,
 		  int behaviourAlarmId,
 		  int alarmRecordId,
 		  Json &json)
   {
-    string fileHash = "";
-    int fileSize = 0;
-    int sectionSize = 0;
+    int fileSize = buflen;
+    int sectionSize = fileSize;
     int fileType = 1;
     string detailFileType = "jpg";
-    if (fileName.length() > 3) {
-      detailFileType = fileName.substr(fileName.length() - 3);
-    } else {
-      detailFileType = "err";
-    }
-    string fileData = "";
 
-    ifstream in(fileName, ios::binary);
-    if (!in) {
-      return -1;
-    }
+    // new codes
+    string base64code;
+    Base64::encode(buf, buflen, base64code);
+    string fileData = base64code;
 
-    ostringstream os;
-    os << in.rdbuf();
-    fileData = os.str();
-    Base64::encode(fileData);
+    char md5sum[MD5_STR_LEN + 1];
+    memset(md5sum, 0, sizeof(md5sum));
+    Compute_string_md5((unsigned char*)buf, buflen, md5sum);
+    string fileHash = string(md5sum);
 
-    in.seekg(0,ios_base::end);
-    fileSize = in.tellg(); //
-    sectionSize = fileSize; //
-
-    in.seekg(0,ios_base::beg);
-
-    char md5_str[MD5_STR_LEN + 1];
-    memset(md5_str, 0, sizeof(md5_str));
-    Compute_file_md5(in, md5_str);
-    fileHash = string(md5_str);
-
-    in.seekg(0,ios_base::beg);
-
-    in.close();
 
     // upload_file_info
     json = Json();
-    int code = upload_file_info(token, userId, fileName, fileHash, fileSize, sectionSize, fileType, detailFileType, behaviourAlarmId, alarmRecordId, json);
+    int code = upload_file_info(token, userId, "cache.jpg", fileHash, fileSize, sectionSize, fileType, detailFileType, behaviourAlarmId, alarmRecordId, json);
     if (code != N_ERROR[0]) {
+      delete buf;
       return -2;
     }
 
@@ -346,6 +327,7 @@ class Protocal {
     json = Json();
     long offset = 0;
     int codee = upload_big_file(token, fileHash, offset, fileData, json);
+    delete buf;
     return codee;
   }
   string p_error(int code) const {
@@ -519,28 +501,27 @@ class Session {
     }
     delete mProtocal;
   }
-  std::future<Json>& alarm_face(const string &imagefile, double conf) {
-    vf.push_back(std::async(std::launch::async, alarm, this, UW_FACE, imagefile, conf));
+  std::future<Json>& alarm_face(/*const string &imagefile, */const char *buf, int buflen, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_FACE, /*imagefile, */buf, buflen, conf));
     return vf[vf.size()-1];
   }
   std::future<Json>& alarm_smoke(const string &imagefile, double conf) {
-    vf.push_back(std::async(std::launch::async, alarm, this, UW_SMOKE, imagefile, conf));
+    //vf.push_back(std::async(std::launch::async, alarm, this, UW_SMOKE, imagefile, conf));
     return vf[vf.size()-1];
   }
   std::future<Json>& alarm_phone(const string &imagefile, double conf) {
-    vf.push_back(std::async(std::launch::async, alarm, this, UW_PHONE, imagefile, conf));
+    //vf.push_back(std::async(std::launch::async, alarm, this, UW_PHONE, imagefile, conf));
     return vf[vf.size()-1];
   }
   std::future<Json>& alarm_unbelt(const string &imagefile, double conf) {
-    vf.push_back(std::async(std::launch::async, alarm, this, UW_UNBELT, imagefile, conf));
+    //vf.push_back(std::async(std::launch::async, alarm, this, UW_UNBELT, imagefile, conf));
     return vf[vf.size()-1];
   }
   std::future<Json>& alarm_fatigue(const string &imagefile, double conf) {
-    vf.push_back(std::async(std::launch::async, alarm, this, UW_FATIGUE, imagefile, conf));
+    //vf.push_back(std::async(std::launch::async, alarm, this, UW_FATIGUE, imagefile, conf));
     return vf[vf.size()-1];
   }
-  static Json alarm(Session * ss, int type, string imagefile, double precisions) {
-
+  static Json alarm(Session * ss, int type, /*string imagefile, */const char *buf, int buflen, double precisions) {
     {
       std::lock_guard<std::mutex> lck (ss->mtx);
       if (ss->token == "") {
@@ -577,9 +558,10 @@ class Session {
     int behaviourAlarmId = json["contents"].int_value();
 
     json = Json();
-    ss->mProtocal->upload_file(ss->token, ss->userId, imagefile, behaviourAlarmId, alarmRecordId, json);
+    ss->mProtocal->upload_file(ss->token, ss->userId,/* imagefile,*/ buf, buflen, behaviourAlarmId, alarmRecordId, json);
     return json;
   }
+
   static Json login(Session *ss) {
     Json json;
     ss->mProtocal->login(ss->mUsername, ss->mPassword, 1, json);
