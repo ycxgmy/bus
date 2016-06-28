@@ -534,8 +534,14 @@ class Session {
       }
     }
 
+    time_t nowtime = time(NULL);
+    tm *now = localtime(&nowtime);
+    char bufTime[128];
+    sprintf(bufTime, "%04d-%02d-%02d %02d:%02d:%02d",
+	    now->tm_year+1900, now->tm_mon+1, now->tm_mday,
+	    now->tm_hour, now->tm_min, now->tm_sec);
 
-    string alarmRecordDateTime = "2016-5-19 14:13:59";
+    string alarmRecordDateTime(bufTime);
     Json o = Json::object {
       {"plateNumber",ss->mBusInfo["plateNumber"]},
       {"province",ss->mBusInfo["province"]},
@@ -543,7 +549,7 @@ class Session {
       {"county",ss->mBusInfo["county"]},
       {"busRoute",ss->mBusInfo["busRoute"]},
       {"driverName",ss->mBusInfo["driverName"]},
-      {"eventTime","2016-5-19 14:13:59"},
+      {"eventTime",alarmRecordDateTime},
       {"precisions",precisions},
       {"hasImg",2},
     };
