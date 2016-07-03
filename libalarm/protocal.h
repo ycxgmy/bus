@@ -501,27 +501,27 @@ class Session {
     }
     delete mProtocal;
   }
-  std::future<Json>& alarm_face(/*const string &imagefile, */const char *buf, int buflen, double conf) {
-    vf.push_back(std::async(std::launch::async, alarm, this, UW_FACE, /*imagefile, */buf, buflen, conf));
+  std::future<Json>& alarm_face(const char *buf, int buflen, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_FACE, buf, buflen, conf));
     return vf[vf.size()-1];
   }
-  std::future<Json>& alarm_smoke(const string &imagefile, double conf) {
-    //vf.push_back(std::async(std::launch::async, alarm, this, UW_SMOKE, imagefile, conf));
+  std::future<Json>& alarm_smoke(const char *buf, int buflen, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_SMOKE, buf, buflen, conf));
     return vf[vf.size()-1];
   }
-  std::future<Json>& alarm_phone(const string &imagefile, double conf) {
-    //vf.push_back(std::async(std::launch::async, alarm, this, UW_PHONE, imagefile, conf));
+  std::future<Json>& alarm_phone(const char *buf, int buflen, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_PHONE, buf, buflen, conf));
     return vf[vf.size()-1];
   }
-  std::future<Json>& alarm_unbelt(const string &imagefile, double conf) {
-    //vf.push_back(std::async(std::launch::async, alarm, this, UW_UNBELT, imagefile, conf));
+  std::future<Json>& alarm_unbelt(const char *buf, int buflen, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_UNBELT, buf, buflen, conf));
     return vf[vf.size()-1];
   }
-  std::future<Json>& alarm_fatigue(const string &imagefile, double conf) {
-    //vf.push_back(std::async(std::launch::async, alarm, this, UW_FATIGUE, imagefile, conf));
+  std::future<Json>& alarm_fatigue(const char *buf, int buflen, double conf) {
+    vf.push_back(std::async(std::launch::async, alarm, this, UW_FATIGUE, buf, buflen, conf));
     return vf[vf.size()-1];
   }
-  static Json alarm(Session * ss, int type, /*string imagefile, */const char *buf, int buflen, double precisions) {
+  static Json alarm(Session * ss, int type, const char *buf, int buflen, double precisions) {
     {
       std::lock_guard<std::mutex> lck (ss->mtx);
       if (ss->token == "") {
