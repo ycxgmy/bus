@@ -1,4 +1,4 @@
-#include <opencv2/opencv.hpp>
+﻿#include <opencv2/opencv.hpp>
 using namespace cv;
 #include "protocal.h"
 #include <iostream>

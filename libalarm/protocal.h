@@ -1,4 +1,4 @@
-#ifndef ___PROTOCAL__H_
+﻿#ifndef ___PROTOCAL__H_
 #define ___PROTOCAL__H_
 
 #include "Base64.h"
