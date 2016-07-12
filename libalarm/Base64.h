@@ -5,10 +5,11 @@
 //#include "ScoMsgParserDll.h"
 //#include <stdio.h>
 #include <string>
+#include "config.h"
 
 using std::string;
 
-class Base64
+class APIDEC Base64
 {
 public:
 	static void encode(string& str);

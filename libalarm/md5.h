@@ -1,5 +1,6 @@
 #ifndef MD5_H
 #define MD5_H
+#include "config.h"
 #include <fstream>
 using namespace std;
 typedef struct

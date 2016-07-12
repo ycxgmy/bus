@@ -14,9 +14,9 @@ IF (UNIX)
 SET(ExtLibs ${ExtLibs} curl curlpp)
 
 ELSEIF (WIN32)
-include_directories("E:\\xrz.bus\\libcurl\\include" "E:\\xrz.bus\\libcurl\\include\\lib" "E:\\xrz.bus\\libcurl\\include\\include")
-link_directories("E:\\xrz.bus\\libcurl\\lib")
-add_definitions ("-DNOMINMAX")
+include_directories("E:\\wk\\include")
+link_directories("E:\\wk\\lib")
+add_definitions ("-DNOMINMAX -DBUILDING_CURLPP")
 SET(ExtLibs ${ExtLibs} libcurl.lib curlppMD.lib)
 
 ELSEIF (APPLE)

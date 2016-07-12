@@ -49,7 +49,7 @@
  */
 
 #pragma once
-
+#include "config.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -60,7 +60,7 @@ namespace json11 {
 
 class JsonValue;
 
-class Json final {
+class APIDEC Json final {
 public:
     // Types
     enum Type {
