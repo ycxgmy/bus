@@ -69,13 +69,14 @@ const string _ERROR_CODES[ERROR_CODES_LEN * 2] = {
 const int    N_ERROR[] = {X_I(0),X_I(1),X_I(2),X_I(3),X_I(4),X_I(5),X_I(6),X_I(7),X_I(8),X_I(9),X_I(10),X_I(11),X_I(12),X_I(13),X_I(14),X_I(15),X_I(16),};
 const string S_ERROR[] = {X_S(0),X_S(1),X_S(2),X_S(3),X_S(4),X_S(5),X_S(6),X_S(7),X_S(8),X_S(9),X_S(10),X_S(11),X_S(12),X_S(13),X_S(14),X_S(15),X_S(16),};
 
-const int ALARM_CODES_LEN = 5;
+const int ALARM_CODES_LEN = 6;
 const string _ALARM_CODES[ALARM_CODES_LEN * 2] = {
   "3001","人脸识别",
   "3002","抽烟识别",
   "3003","打电话",
   "3004","未系安全带",
   "3005","疲劳检测",
+  "3006","汽油泄漏",
 };
 #undef X_I
 #undef X_S
