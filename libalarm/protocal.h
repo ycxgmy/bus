@@ -1,6 +1,7 @@
 ﻿#ifndef ___PROTOCAL__H_
 #define ___PROTOCAL__H_
 
+#include "config.h"
 #include "Base64.h"
 #include "md5.h"
 #include "json11/json11.hpp"
@@ -88,7 +89,7 @@ const int UW_PHONE = 2;
 const int UW_UNBELT = 3;
 const int UW_FATIGUE = 4;
 
-class Protocal {
+class APIDEC Protocal {
  public:
   int verbose;
   Protocal();
@@ -149,7 +150,7 @@ class Protocal {
 #endif
 };
 
-class Session {
+/*class Session {
  public:
   string mUsername;
   string mPassword;
@@ -259,7 +260,7 @@ class Session {
     int behaviourAlarmId = json["contents"].int_value();
 
     json = Json();
-    ss->mProtocal->upload_file(ss->token, ss->userId,/* imagefile,*/ buf, buflen, behaviourAlarmId, alarmRecordId, json);
+    ss->mProtocal->upload_file(ss->token, ss->userId, buf, buflen, behaviourAlarmId, alarmRecordId, json);
     return json;
   }
 
@@ -268,7 +269,7 @@ class Session {
     ss->mProtocal->login(ss->mUsername, ss->mPassword, 1, json);
     return json;
   }
-};
+};*/
 
 
 #endif // ___PROTOCAL__H_

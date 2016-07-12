@@ -1,4 +1,4 @@
-#include "protocal.h"
+﻿#include "protocal.h"
 #ifdef CURLPP
 #else
 unsigned char bufff[40960];
