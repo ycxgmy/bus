@@ -1,8 +1,8 @@
-﻿#include <opencv2/opencv.hpp>
-using namespace cv;
-#include "protocal.h"
+﻿#include "session.h"
 #include <iostream>
 using namespace std;
+#include <opencv2/opencv.hpp>
+using cv::Mat;
 char * mat2jpgbuf(const cv::Mat &m, int &buflen) {
   vector<uchar> buf;
   cv::imencode(".jpg", m, buf, std::vector<int>());
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
   for (int i = 0; i < 1; ++i) {
     Mat x = Mat::zeros(100,100, CV_8UC1);
-    putText(x, std::to_string(getTickCount()),Point(0,50), 1, 1, Scalar(255,255,255));
+	putText(x, std::to_string(cv::getTickCount()), cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255));
 
     int buflen;  char *pp = mat2jpgbuf(x, buflen);
     ss->alarm_face(pp, buflen, 0.9);
