@@ -12,8 +12,8 @@ int writer(unsigned char *data, size_t size, size_t nmemb, unsigned char *writer
 }
 #endif
 
-Protocal::Protocal() {
-  verbose = 1;
+Protocal::Protocal(int verb) {
+  verbose = verb;
 #ifndef CURLPP
   curl_global_init(CURL_GLOBAL_ALL);
 #endif

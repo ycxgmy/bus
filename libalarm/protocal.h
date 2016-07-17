@@ -93,7 +93,7 @@ const int UW_FATIGUE = 4;
 class APIDEC Protocal {
  public:
   int verbose;
-  Protocal();
+  Protocal(const int verb = 1);
   ~Protocal();
 
   int login(const string &userName,

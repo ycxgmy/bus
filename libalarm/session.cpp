@@ -9,8 +9,9 @@ Session::Session(const string &plateNumber
 	, const string &driverName
 	, const string &username
 	, const string &password
+	, const int verbose
 	) {
-	mProtocal = new Protocal();
+	mProtocal = new Protocal(verbose);
 	mUsername = username;
 	mPassword = password;
 	Json json = Json::object{

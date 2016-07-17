@@ -31,6 +31,7 @@ public:
 		, const string &driverName
 		, const string &username = "test"
 		, const string &password = "123456"
+		, const int verbose = 1
 		);
 	~Session();
 	std::future<string>& alarm_face(const char *buf, int buflen, double conf);
