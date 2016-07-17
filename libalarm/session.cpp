@@ -58,7 +58,8 @@ Json Session::alarm(Session * ss, int type, const char *buf, int buflen, double 
 	{
 		std::lock_guard<std::mutex> lck(ss->mtx);
 		if (ss->token == "") {
-			Json json = ss->fLogin.get();
+			string err;
+			Json json = Json::parse(ss->fLogin.get(), err);
 			if (N_ERROR[0] == json["resultCode"].int_value()) {
 				ss->token = json["token"].string_value();
 				ss->nickName = json["nickName"].string_value();
@@ -108,8 +109,8 @@ Json Session::alarm(Session * ss, int type, const char *buf, int buflen, double 
 	return json;
 }
 
-Json Session::login(Session *ss) {
+string Session::login(Session *ss) {
 	Json json;
 	ss->mProtocal->login(ss->mUsername, ss->mPassword, 1, json);
-	return json;
+	return json.dump();
 }

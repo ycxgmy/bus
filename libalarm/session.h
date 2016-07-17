@@ -14,7 +14,7 @@ class APIDEC Session {
 public:
 	string mUsername;
 	string mPassword;
-	future<Json> fLogin;
+	future<string> fLogin;
 	Json mBusInfo;
 	mutex mtx;
 
@@ -40,5 +40,5 @@ public:
 	std::future<Json>& alarm_unbelt(const char *buf, int buflen, double conf);
 	std::future<Json>& alarm_fatigue(const char *buf, int buflen, double conf);
 	static Json alarm(Session * ss, int type, const char *buf, int buflen, double precisions);
-	static Json login(Session *ss);
+	static string login(Session *ss);
 };
