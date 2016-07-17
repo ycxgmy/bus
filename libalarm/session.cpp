@@ -64,6 +64,13 @@ Json Session::alarm(Session * ss, int type, const char *buf, int buflen, double 
 				ss->nickName = json["nickName"].string_value();
 				ss->userId = json["userId"].int_value();
 			}
+			else {
+				ss->fLogin = std::async(std::launch::async, login, ss);
+				if (ss->mProtocal->verbose != 0) {
+					cerr << "login failed, retrying ..." << endl;
+				}
+				return json;
+			}
 		}
 	}
 
