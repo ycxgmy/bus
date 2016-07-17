@@ -2,5 +2,6 @@
 #define ___CONFIG__H_
 #ifdef WIN32
 #define APIDEC __declspec(dllexport)
+#define BUILDING_CURLPP
 #endif
 #endif
