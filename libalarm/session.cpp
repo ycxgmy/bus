@@ -13,7 +13,7 @@ Session::Session(const string &plateNumber
 	mProtocal = new Protocal();
 	mUsername = username;
 	mPassword = password;
-	mBusInfo = Json::object{
+	Json json = Json::object{
 		{ "plateNumber",plateNumber },
 		{ "province",province },
 		{ "city",city },
@@ -23,38 +23,39 @@ Session::Session(const string &plateNumber
 		{ "eventTime","" },
 		{ "precisions",0 },
 	};
+	mBusInfo = json.dump();
 
 	token = nickName = "";
 	fLogin = std::async(std::launch::async, login, this);
 }
 Session::~Session() {
 	// sync all asyncs
-	for (future<Json> &x : vf) {
-		Json j = x.get();
+	for (future<string> &x : vf) {
+		string j = x.get();
 	}
 	delete mProtocal;
 }
-std::future<Json>& Session::alarm_face(const char *buf, int buflen, double conf) {
+std::future<string>& Session::alarm_face(const char *buf, int buflen, double conf) {
 	vf.push_back(std::async(std::launch::async, alarm, this, UW_FACE, buf, buflen, conf));
 	return vf[vf.size() - 1];
 }
-std::future<Json>& Session::alarm_smoke(const char *buf, int buflen, double conf) {
+std::future<string>& Session::alarm_smoke(const char *buf, int buflen, double conf) {
 	vf.push_back(std::async(std::launch::async, alarm, this, UW_SMOKE, buf, buflen, conf));
 	return vf[vf.size() - 1];
 }
-std::future<Json>& Session::alarm_phone(const char *buf, int buflen, double conf) {
+std::future<string>& Session::alarm_phone(const char *buf, int buflen, double conf) {
 	vf.push_back(std::async(std::launch::async, alarm, this, UW_PHONE, buf, buflen, conf));
 	return vf[vf.size() - 1];
 }
-std::future<Json>& Session::alarm_unbelt(const char *buf, int buflen, double conf) {
+std::future<string>& Session::alarm_unbelt(const char *buf, int buflen, double conf) {
 	vf.push_back(std::async(std::launch::async, alarm, this, UW_UNBELT, buf, buflen, conf));
 	return vf[vf.size() - 1];
 }
-std::future<Json>& Session::alarm_fatigue(const char *buf, int buflen, double conf) {
+std::future<string>& Session::alarm_fatigue(const char *buf, int buflen, double conf) {
 	vf.push_back(std::async(std::launch::async, alarm, this, UW_FATIGUE, buf, buflen, conf));
 	return vf[vf.size() - 1];
 }
-Json Session::alarm(Session * ss, int type, const char *buf, int buflen, double precisions) {
+string Session::alarm(Session * ss, int type, const char *buf, int buflen, double precisions) {
 	{
 		std::lock_guard<std::mutex> lck(ss->mtx);
 		if (ss->token == "") {
@@ -70,7 +71,7 @@ Json Session::alarm(Session * ss, int type, const char *buf, int buflen, double 
 				if (ss->mProtocal->verbose != 0) {
 					cerr << "login failed, retrying ..." << endl;
 				}
-				return json;
+				return json.dump();
 			}
 		}
 	}
@@ -83,13 +84,15 @@ Json Session::alarm(Session * ss, int type, const char *buf, int buflen, double 
 		now->tm_hour, now->tm_min, now->tm_sec);
 
 	string alarmRecordDateTime(bufTime);
+	string err;
+	Json busInfo = Json::parse(ss->mBusInfo, err);
 	Json o = Json::object{
-		{ "plateNumber",ss->mBusInfo["plateNumber"] },
-		{ "province",ss->mBusInfo["province"] },
-		{ "city",ss->mBusInfo["city"] },
-		{ "county",ss->mBusInfo["county"] },
-		{ "busRoute",ss->mBusInfo["busRoute"] },
-		{ "driverName",ss->mBusInfo["driverName"] },
+		{ "plateNumber",busInfo["plateNumber"] },
+		{ "province",busInfo["province"] },
+		{ "city",busInfo["city"] },
+		{ "county",busInfo["county"] },
+		{ "busRoute",busInfo["busRoute"] },
+		{ "driverName",busInfo["driverName"] },
 		{ "eventTime",alarmRecordDateTime },
 		{ "precisions",precisions },
 		{ "hasImg",2 },
@@ -98,7 +101,7 @@ Json Session::alarm(Session * ss, int type, const char *buf, int buflen, double 
 	ss->mProtocal->alarm(ss->token, type, alarmRecordDateTime, o, ss->userId, json);
 
 	if (N_ERROR[0] != json["resultCode"].int_value()) {
-		return json;
+		return json.dump();
 	}
 
 	int alarmRecordId = json["alarmRecordId"].int_value();
@@ -106,7 +109,7 @@ Json Session::alarm(Session * ss, int type, const char *buf, int buflen, double 
 
 	json = Json();
 	ss->mProtocal->upload_file(ss->token, ss->userId,/* imagefile,*/ buf, buflen, behaviourAlarmId, alarmRecordId, json);
-	return json;
+	return json.dump();
 }
 
 string Session::login(Session *ss) {

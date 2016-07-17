@@ -2,27 +2,26 @@
 #include <string>
 #include <vector>
 #include <future>
-#include "json11/json11.hpp"
+#include "config.h"
 class Protocal;
 using std::string;
 using std::mutex;
 using std::vector;
 using std::future;
-using json11::Json;
 
 class APIDEC Session {
 public:
 	string mUsername;
 	string mPassword;
 	future<string> fLogin;
-	Json mBusInfo;
+	string mBusInfo;
 	mutex mtx;
 
 	string token, nickName;
 	int userId;
 
 	Protocal *mProtocal;
-	vector<future<Json> > vf;
+	vector<future<string> > vf;
 
 	Session(const string &plateNumber
 		, const string &province
@@ -34,11 +33,11 @@ public:
 		, const string &password = "123456"
 		);
 	~Session();
-	std::future<Json>& alarm_face(const char *buf, int buflen, double conf);
-	std::future<Json>& alarm_smoke(const char *buf, int buflen, double conf);
-	std::future<Json>& alarm_phone(const char *buf, int buflen, double conf);
-	std::future<Json>& alarm_unbelt(const char *buf, int buflen, double conf);
-	std::future<Json>& alarm_fatigue(const char *buf, int buflen, double conf);
-	static Json alarm(Session * ss, int type, const char *buf, int buflen, double precisions);
+	std::future<string>& alarm_face(const char *buf, int buflen, double conf);
+	std::future<string>& alarm_smoke(const char *buf, int buflen, double conf);
+	std::future<string>& alarm_phone(const char *buf, int buflen, double conf);
+	std::future<string>& alarm_unbelt(const char *buf, int buflen, double conf);
+	std::future<string>& alarm_fatigue(const char *buf, int buflen, double conf);
+	static string alarm(Session * ss, int type, const char *buf, int buflen, double precisions);
 	static string login(Session *ss);
 };
