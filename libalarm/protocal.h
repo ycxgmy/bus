@@ -31,12 +31,6 @@ extern int l;
 int writer(unsigned char *data, size_t size, size_t nmemb, unsigned char *writerData);
 #endif
 
-const string PATH_LOGIN = "http://uwonders.ticp.net:8089/alarmupload/login";
-const string PATH_ALARM = "http://uwonders.ticp.net:8089/alarmupload/alarm";
-const string PATH_CONNT = "http://uwonders.ticp.net:8089/alarmupload/connt";
-const string PATH_UPLOAD_FILE_INFO = "http://uwonders.ticp.net:8088/upload_file_info";
-const string PATH_UPLOAD_BIG_FILE = "http://uwonders.ticp.net:8088/upload_big_file";
-const string PATH_UPLOAD_FILE = "http://uwonders.ticp.net:8088/upload_file";
 
 const int ERROR_CODES_LEN = 17;
 const string _ERROR_CODES[ERROR_CODES_LEN * 2] = {
