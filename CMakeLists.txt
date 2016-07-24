@@ -14,10 +14,10 @@ IF (UNIX)
 SET(ExtLibs ${ExtLibs} curl curlpp)
 
 ELSEIF (WIN32)
-include_directories("E:\\wk\\include")
-link_directories("E:\\wk\\lib")
+include_directories("E:\\libalarm\\include")
+link_directories("E:\\libalarm\\lib")
 add_definitions ("-DNOMINMAX -DBUILDING_CURLPP")
-SET(ExtLibs ${ExtLibs} libcurl.lib curlppMD.lib)
+SET(ExtLibs ${ExtLibs} libcurl_imp.lib curlpp.lib)
 
 ELSEIF (APPLE)
 ENDIF()
@@ -27,3 +27,10 @@ add_subdirectory(libalarm)
 
 add_executable(bus test.cpp)
 target_link_libraries(bus ${ExtLibs} libalarm)
+
+#install(FILES "${CURL_BINARY_DIR}/curl-config"
+#        DESTINATION "E:\\wk\\lib"
+#        PERMISSIONS
+#          OWNER_READ OWNER_WRITE OWNER_EXECUTE
+#          GROUP_READ GROUP_EXECUTE
+#          WORLD_READ WORLD_EXECUTE)
