@@ -6,7 +6,7 @@
 #include <future>
 // 串口数据读写发生在这个类里面
 
-class upss;
+class Upss;
 class APIDEC Uart {
 public:
 	HANDLE  m_hComm;
@@ -14,8 +14,8 @@ public:
 	std::future<void> fquit;
 	unsigned char rbuf[1024];
 	unsigned char wbuf[1024];
-	upss *up;
-	Uart(int portNo, upss *u);
+	Upss *up;
+	Uart(int portNo, Upss *u);
 	~Uart();
 	void run();
 	void stop();
