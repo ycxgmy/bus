@@ -4,3 +4,5 @@ Uart.cpp
 Upss.cpp)
 
 target_link_libraries(libalarm ${ExtLibs})
+install (TARGETS libalarm DESTINATION bin)
+install (FILES Uart.h session.h protocal.h DESTINATION include)

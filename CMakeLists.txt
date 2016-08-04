@@ -28,9 +28,4 @@ add_subdirectory(libalarm)
 add_executable(bus test.cpp)
 target_link_libraries(bus ${ExtLibs} libalarm)
 
-#install(FILES "${CURL_BINARY_DIR}/curl-config"
-#        DESTINATION "E:\\wk\\lib"
-#        PERMISSIONS
-#          OWNER_READ OWNER_WRITE OWNER_EXECUTE
-#          GROUP_READ GROUP_EXECUTE
-#          WORLD_READ WORLD_EXECUTE)
+install (TARGETS bus DESTINATION bin)
