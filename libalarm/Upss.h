@@ -1,9 +1,10 @@
 #ifndef ___UPSS__H_
 #define ___UPSS__H_
+#include "config.h"
 #include <string.h>
 // 气味传感器底层处理协议
 // Uart Portocal 4 Smell Sensor
-class Upss {
+class APIDEC Upss {
 public:
 	const static int LEN = 1024;
 	const static int MAX_PACKAGE_LEN = 18;
