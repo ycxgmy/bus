@@ -20,7 +20,7 @@ public:
 
 	unsigned char out[LEN];
 
-	Upss(Session *s = NULL);
+	Upss(AlarmCheck *a = NULL, Session *s = NULL);
 	~Upss();
 	void process(const unsigned char *data, int len);
 	void response(const unsigned char *data, int len);

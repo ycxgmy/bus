@@ -7,15 +7,18 @@ using std::endl;
 #include "AlarmCheck.h"
 #include "session.h"
 
-Upss::Upss(Session *s) {
+Upss::Upss(AlarmCheck *a, Session *s) {
 	ss = s;
-	mAC = new AlarmCheck();
+	mAC = a;
+	if (!mAC) {
+		//mAC = new AlarmCheck();
+	}
 	write_ptr = 0;
 	read_ptr = 0;
 }
 Upss::~Upss() {
 	if (mAC) {
-		delete mAC;
+		//delete mAC;
 		mAC = NULL;
 	}
 }
@@ -65,7 +68,7 @@ void Upss::response(const unsigned char *data, int len) {
 
 void Upss::ac(int *v, int len) {
 	AlarmCheck &ac = *mAC;
-	if (ac.check(v, 8) > 0) {
+	if (ac.check(v, 4) > 0) {
 		std::cout << "Alarm id:";
 		for (int i = 0; i < ac.N; ++i) {
 			if (ac.alarmid[i] > 0) {

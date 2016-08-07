@@ -4,7 +4,9 @@
 #include <math.h>
 #include <iostream>
 
-AlarmCheck::AlarmCheck() {
+AlarmCheck::AlarmCheck(int min_stable_len, int thre) {
+	NORMAL_THRESHOLD = thre;
+	NORMAL_MIN_LENGTH = min_stable_len;
 	memset(values, 0, sizeof(values));
 	memset(states, 0, sizeof(states));
 	memset(acc, 0, sizeof(acc));

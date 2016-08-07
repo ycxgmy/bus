@@ -8,15 +8,15 @@ public:
 	const int S_READY = 1;
 	const int S_ALARM = 2;
 
-	const static int NORMAL_THRESHOLD = 1; // 数据正常波动最大值
-	const static int NORMAL_MIN_LENGTH = 20; // 连续稳定数据最小值
+	int NORMAL_THRESHOLD; // 数据正常波动最大值
+	int NORMAL_MIN_LENGTH; // 连续稳定数据最小值
 
 	int values[N];
 	int states[N];
 	int acc[N];
 	int alarmid[N];
 
-	AlarmCheck();
+	AlarmCheck(int min_stable_len = 20, int thre = 1);
 	int check(int *v, int len);
 };
 #endif ___ALARMCHECK__H_
