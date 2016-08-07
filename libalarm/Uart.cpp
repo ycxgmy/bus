@@ -4,7 +4,7 @@
 #include "AlarmCheck.h"
 #include "Upss.h"
 
-Uart::Uart(int portNo, upss *u) {
+Uart::Uart(int portNo, Upss *u) {
 	up = u;
 	mQuit = true;
 	/** 把串口的编号转换为设备名 */
