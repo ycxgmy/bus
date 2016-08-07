@@ -1,5 +1,7 @@
 #include "Uart.h"
 #include <iostream>
+using std::cerr;
+using std::endl;
 #include <future>
 #include "AlarmCheck.h"
 #include "Upss.h"
@@ -20,6 +22,17 @@ Uart::Uart(int portNo, Upss *u) {
 		0,
 		0);
 
+	if (!m_hComm) {
+		cerr << "Failed to open " << szPort << endl;
+		return;
+	}
+	DCB  dcb;
+	GetCommState(m_hComm, &dcb);
+	//cout << dcb.BaudRate << " " << dcb.ByteSize << endl;
+	dcb.BaudRate = CBR_9600;
+	dcb.ByteSize = 8;
+	dcb.StopBits = 1;
+	SetCommState(m_hComm, &dcb);
 }
 Uart::~Uart() {
 	fquit.get();
