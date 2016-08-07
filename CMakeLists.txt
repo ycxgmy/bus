@@ -15,7 +15,7 @@ SET(ExtLibs ${ExtLibs} curl curlpp)
 
 ELSEIF (WIN32)
 include_directories("E:\\libalarm\\include")
-link_directories("E:\\libalarm\\lib")
+link_directories("E:\\libalarm\\bin")
 add_definitions ("-DNOMINMAX -DBUILDING_CURLPP")
 SET(ExtLibs ${ExtLibs} libcurl_imp.lib curlpp.lib)
 
