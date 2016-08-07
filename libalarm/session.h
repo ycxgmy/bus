@@ -39,6 +39,7 @@ public:
 	std::future<string>& alarm_phone(const char *buf, int buflen, double conf);
 	std::future<string>& alarm_unbelt(const char *buf, int buflen, double conf);
 	std::future<string>& alarm_fatigue(const char *buf, int buflen, double conf);
+	std::future<string>& alarm_gas(const char *buf, int buflen, double conf);
 	static string alarm(Session * ss, int type, const char *buf, int buflen, double precisions);
 	static string login(Session *ss);
 };

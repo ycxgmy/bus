@@ -76,13 +76,14 @@ const string _ALARM_CODES[ALARM_CODES_LEN * 2] = {
 #undef X_S
 #define X_I(i) std::stoi(_ALARM_CODES[2*i])
 #define X_S(i) _ALARM_CODES[2*i+1]
-const int    N_ALARM[] = {X_I(0),X_I(1),X_I(2),X_I(3),X_I(4),};
-const string S_ALARM[] = {X_S(0),X_S(1),X_S(2),X_S(3),X_S(4),};
+const int    N_ALARM[] = {X_I(0),X_I(1),X_I(2),X_I(3),X_I(4),X_I(5),};
+const string S_ALARM[] = {X_S(0),X_S(1),X_S(2),X_S(3),X_S(4),X_S(5),};
 const int UW_FACE = 0;
 const int UW_SMOKE = 1;
 const int UW_PHONE = 2;
 const int UW_UNBELT = 3;
 const int UW_FATIGUE = 4;
+const int UW_GAS = 5;
 
 class APIDEC Protocal {
  public:

@@ -172,7 +172,7 @@ int Protocal::upload_big_file(const string &token,
     {"uploadFileReq", body}
   };
   if (verbose > 0)
-    cout << "I: " << req.dump() << endl;
+	  ;// cout << "I: " << req.dump() << endl;
   std::stringstream out;
   curlpp_post(PATH_UPLOAD_BIG_FILE, req, out);
 

@@ -56,6 +56,10 @@ std::future<string>& Session::alarm_fatigue(const char *buf, int buflen, double 
 	vf.push_back(std::async(std::launch::async, alarm, this, UW_FATIGUE, buf, buflen, conf));
 	return vf[vf.size() - 1];
 }
+std::future<string>& Session::alarm_gas(const char *buf, int buflen, double conf) {
+	vf.push_back(std::async(std::launch::async, alarm, this, UW_GAS, buf, buflen, conf));
+	return vf[vf.size() - 1];
+}
 string Session::alarm(Session * ss, int type, const char *buf, int buflen, double precisions) {
 	{
 		std::lock_guard<std::mutex> lck(ss->mtx);
@@ -84,6 +88,10 @@ string Session::alarm(Session * ss, int type, const char *buf, int buflen, doubl
 		now->tm_year + 1900, now->tm_mon + 1, now->tm_mday,
 		now->tm_hour, now->tm_min, now->tm_sec);
 
+	int hasImg = 2;
+	if (type == UW_GAS) {
+		hasImg = 0;
+	}
 	string alarmRecordDateTime(bufTime);
 	string err;
 	Json busInfo = Json::parse(ss->mBusInfo, err);
@@ -96,12 +104,15 @@ string Session::alarm(Session * ss, int type, const char *buf, int buflen, doubl
 		{ "driverName",busInfo["driverName"] },
 		{ "eventTime",alarmRecordDateTime },
 		{ "precisions",precisions },
-		{ "hasImg",2 },
+		{ "hasImg", hasImg },
 	};
 	Json json;
 	ss->mProtocal->alarm(ss->token, type, alarmRecordDateTime, o, ss->userId, json);
 
 	if (N_ERROR[0] != json["resultCode"].int_value()) {
+		return json.dump();
+	}
+	if (hasImg == 0) {
 		return json.dump();
 	}
 
