@@ -18,7 +18,7 @@ Uart::Uart(int portNo, Upss *u) {
 	// start reader
 	fquit = std::async(std::launch::async, read_process, this);
 	// start watcher
-	mPnpWatcher = std::async(std::launch::async, pnp_wacher, this);
+	mPnpWatcher = std::async(std::launch::async, pnp_watcher, this);
 }
 Uart::~Uart() {
 	if (m_hComm != INVALID_HANDLE_VALUE) {
@@ -105,7 +105,7 @@ void Uart::response(const unsigned char *data, int len) {
 	ac(channels, 8);
 }
 
-void Uart::pnp_wacher(Uart *u) {
+void Uart::pnp_watcher(Uart *u) {
 	std::cout << "Thread: pnp_wacher is running" << endl;
 	while (!u->mQuit) {
 		std::this_thread::sleep_for(std::chrono::seconds(1));

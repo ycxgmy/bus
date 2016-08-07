@@ -30,6 +30,6 @@ public:
 	static void response(const unsigned char *data, int len);
 
 	std::future<void> mPnpWatcher;
-	static void pnp_wacher(Uart *u);
+	static void pnp_watcher(Uart *u);
 };
 #endif
