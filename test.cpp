@@ -5,6 +5,7 @@ using namespace std;
 using cv::Mat;
 #include "Uart.h"
 #include "Upss.h"
+#include "AlarmCheck.h"
 char * mat2jpgbuf(const cv::Mat &m, int &buflen) {
   vector<uchar> buf;
   cv::imencode(".jpg", m, buf, std::vector<int>());
@@ -34,7 +35,8 @@ int main(int argc, char *argv[]) {
 				, password
 				, std::stoi(verbose)
 			    );
-  Upss up(&ss);
+  AlarmCheck ac(40, 5);
+  Upss up(&ac, &ss);
   Uart u(3, &up);
 
   /*for (int i = 0; i < 1; ++i) {
