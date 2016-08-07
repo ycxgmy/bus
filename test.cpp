@@ -3,6 +3,8 @@
 using namespace std;
 #include <opencv2/opencv.hpp>
 using cv::Mat;
+#include "Uart.h"
+#include "Upss.h"
 char * mat2jpgbuf(const cv::Mat &m, int &buflen) {
   vector<uchar> buf;
   cv::imencode(".jpg", m, buf, std::vector<int>());
@@ -22,7 +24,7 @@ int main(int argc, char *argv[]) {
 	string password = "123456";   if (argc > 8) password = argv[8];
 	string verbose = "1";         if (argc > 9) verbose = argv[9];
 	string imagefile = "";        if (argc > 10) imagefile = argv[10];
-  Session *ss = new Session(plateNumber
+  Session ss(plateNumber
 			    , province
 			    , city
 			    , county
@@ -32,8 +34,10 @@ int main(int argc, char *argv[]) {
 				, password
 				, std::stoi(verbose)
 			    );
+  Upss up(&ss);
+  Uart u(3, &up);
 
-  for (int i = 0; i < 1; ++i) {
+  /*for (int i = 0; i < 1; ++i) {
 	  Mat x;
 	  x = cv::imread(imagefile);
 	  if (x.empty()) {
@@ -42,9 +46,9 @@ int main(int argc, char *argv[]) {
 	putText(x, std::to_string(cv::getTickCount()), cv::Point(0, 50), 1, 1, cv::Scalar(255, 255, 255));
 
     int buflen;  char *pp = mat2jpgbuf(x, buflen);
-    ss->alarm_face(pp, buflen, 0.9);
-  }
-  delete ss;
-  system("pause");
+    ss.alarm_face(pp, buflen, 0.9);
+  }*/
+  getchar();
+  //delete ss;
   return 0;
 }
