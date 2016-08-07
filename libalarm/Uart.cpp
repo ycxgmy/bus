@@ -84,27 +84,6 @@ void Uart::read_process(Uart *u) {
 	}
 }
 
-void Uart::ac(int *v, int len) {
-	static AlarmCheck ac;
-	if (ac.check(v, 8) > 0) {
-		std::cout << "Alarm id:";
-		for (int i = 0; i < ac.N; ++i) {
-			if (ac.alarmid[i] > 0)
-				std::cout << i << " ";
-		}
-		std::cout << std::endl;
-	}
-}
-void Uart::response(const unsigned char *data, int len) {
-	int channels[8];
-	for (int i = 0; i < 8; ++i) {
-		channels[i] = data[2 * i + 0] | data[2 * i + 0 + 1] << 8;
-		std::cout << channels[i] << "\t";
-	}
-	std::cout << std::endl;
-	ac(channels, 8);
-}
-
 void Uart::pnp_watcher(Uart *u) {
 	std::cout << "Thread: pnp_wacher is running" << endl;
 	while (!u->mQuit) {
